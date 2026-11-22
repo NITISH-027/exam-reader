@@ -99,7 +99,11 @@ to reopen the app offline; the hosted page is not an installed offline app.
 | File                      | Responsibility                                                                                     |
 | ------------------------- | -------------------------------------------------------------------------------------------------- |
 | `core.js`                 | Pure parser, validation, settings schema/storage adapter, chunker, rule presets and paper analysis |
-| `app.js`                  | DOM-only rendering, navigation, local speech, focus ruler and controls                             |
+| `app.js`                  | Settings, navigation, focus ruler and UI wiring                                                    |
+| `reader-view.js`          | Text-only question rendering and speech-token metadata                                             |
+| `speech-controller.js`    | Local speech, follow-along highlighting and session cancellation                                   |
+| `ai-aid.js`               | Optional AI consent, request cancellation and memory-only cache                                    |
+| `ui-modules.test.js`      | Isolated controller regressions and asset/packaging checks                                         |
 | `index.html`              | Three semantic screens, labelled controls, CSP and live regions                                    |
 | `style.css`               | Lilac theme, responsive layouts, contrast and reduced-motion styles                                |
 | `tests.js`                | Dependency-free unit and static-contract tests                                                     |
@@ -111,7 +115,11 @@ tests it with injected fetch and a real local HTTP server. `ai-browser-tests.py`
 checks consent, one-question disclosure, unchanged originals and safe UI fallback.
 
 Named helpers separate question construction, progress, recommendations,
-storage and speech. The UI and tests use the same core functions.
+storage and speech. The UI and tests use the same core functions. Persisted
+settings use a per-field validation table instead of a long conditional chain.
+The HTTP API handler is separate from static routing, and the browser validates
+AI results through one named predicate. Client limits are named together, while
+server/provider limits remain independently enforced in `ai-service.js`.
 Comments describe contracts and decisions rather than restating individual lines.
 
 ## Security and efficiency, medium impact
@@ -144,7 +152,7 @@ npm test
 npm run check
 ```
 
-`node tests.js` runs the core suite alone; `npm test` also runs the server/provider suite. See `TESTING.md` for
+`node tests.js` runs the core suite alone; `npm test` also runs the server/provider and UI-module suites. See `TESTING.md` for
 coverage, optional browser-test setup and a manual demo checklist.
 
 The app includes labelled native controls, visible keyboard focus, a skip link
@@ -253,3 +261,17 @@ The supplied source is far below 10 MB and contains no dependency directory.
 Before using one of the two submission attempts, confirm the chosen challenge,
 public repository contents, single branch, deployed URL and LinkedIn post URL.
 No evaluation score is claimed or guaranteed.
+
+### UI module boundaries
+
+- `app.js` connects settings, navigation and controls.
+- `speech-controller.js` owns local speech, fallback highlighting, timers and
+  stale-session guards, using injected navigation and current-state readers.
+- `reader-view.js` builds question nodes using text-only DOM operations and returns
+  word offsets to the caller. It does not own navigation or speech state.
+- `ai-aid.js` owns optional AI consent, cancellation and memory-only result caching.
+  It reads the selected question and profile on each click through an injected state reader.
+- `index.html` loads these local scripts in dependency order. The HTTP allowlist,
+  Docker image and syntax/static checks include all three modules.
+
+These are local source modules, with no added package or third-party request.

@@ -69,3 +69,11 @@ text-only output, browser-memory reuse, new-question consent reset, network,
 no-key and offline fallback. Success responses are MOCKED. Passing these tests
 is not evidence that a live Gemini key/model or Cloud Run deployment worked.
 Use the final verification steps in `DEPLOY.md` for that check.
+
+## UI module regression coverage
+
+`npm test` also runs `ui-modules.test.js` without browser dependencies. It checks
+consent gating, cache keys and clearing, aborted and late AI results, invalid
+output fallback, local-only speech voice selection, stale speech callbacks,
+continuous reading, local follow-along, and delivery/packaging of all UI modules.
+The existing static security checks scan every browser module.

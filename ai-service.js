@@ -123,6 +123,20 @@ function providerPayload(question, profile, model = "gemini-3.8-flash") {
   return payload;
 }
 
+/** Validate complete provider output and discard non-display thought parts. */
+function extractProviderText(data) {
+  const candidate = data.candidates?.[0];
+  if (candidate?.finishReason && candidate.finishReason !== "STOP")
+    throw new Error("incomplete-response");
+  const text = candidate?.content?.parts
+    ?.filter((part) => !part.thought && typeof part.text === "string")
+    .map((part) => part.text)
+    .join("\n")
+    .trim();
+  if (!text || text.length > 6000) throw new Error("invalid-provider-output");
+  return text;
+}
+
 /** Call Gemini only from the server. The key is a header, never a URL or response. */
 async function callGemini({
   question,
@@ -157,16 +171,7 @@ async function callGemini({
     );
     if (!response.ok) throw new Error("provider-unavailable");
     const data = JSON.parse(await readProviderText(response));
-    const candidate = data.candidates?.[0];
-    if (candidate?.finishReason && candidate.finishReason !== "STOP")
-      throw new Error("incomplete-response");
-    const text = candidate?.content?.parts
-      ?.filter((part) => !part.thought && typeof part.text === "string")
-      .map((part) => part.text)
-      .join("\n")
-      .trim();
-    if (!text || text.length > 6000) throw new Error("invalid-provider-output");
-    return text;
+    return extractProviderText(data);
   };
   try {
     return await Promise.race([operation(), timeout]);

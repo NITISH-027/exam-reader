@@ -424,10 +424,11 @@ console.log("\n[10] Word indexing and chunk invariants");
 console.log("\n[11] Static security contracts");
 {
   const fs = require("node:fs");
-  const app = fs.readFileSync(
-    require("node:path").join(__dirname, "app.js"),
-    "utf8",
-  );
+  const app = ["app.js", "reader-view.js", "ai-aid.js", "speech-controller.js"]
+    .map((file) =>
+      fs.readFileSync(require("node:path").join(__dirname, file), "utf8"),
+    )
+    .join("\n");
   const html = fs.readFileSync(
     require("node:path").join(__dirname, "index.html"),
     "utf8",

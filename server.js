@@ -14,6 +14,15 @@ const ASSETS = Object.freeze({
   "/style.css": ["style.css", "text/css; charset=utf-8"],
   "/core.js": ["core.js", "application/javascript; charset=utf-8"],
   "/app.js": ["app.js", "application/javascript; charset=utf-8"],
+  "/reader-view.js": [
+    "reader-view.js",
+    "application/javascript; charset=utf-8",
+  ],
+  "/ai-aid.js": ["ai-aid.js", "application/javascript; charset=utf-8"],
+  "/speech-controller.js": [
+    "speech-controller.js",
+    "application/javascript; charset=utf-8",
+  ],
 });
 const CSP =
   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
@@ -62,6 +71,33 @@ async function readJson(request) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
+/** Validate one API request; route-level error handling stays in createApp. */
+async function handleSimplifyRequest(request, response, simplify, limiter) {
+  if (request.method !== "POST") {
+    response.setHeader("Allow", "POST");
+    return sendJson(response, 405, { error: "Use POST." });
+  }
+  if (!sameOrigin(request))
+    return sendJson(response, 403, {
+      error: "Same-origin requests only.",
+    });
+  if (
+    !/^application\/json(?:\s*;|$)/i.test(request.headers["content-type"] || "")
+  )
+    return sendJson(response, 415, { error: "Use application/json." });
+  // Use the socket address, not a caller-controlled forwarded-IP header.
+  // On Cloud Run a shared proxy may make this stricter; global caps also apply.
+  if (!limiter.allow(request.socket.remoteAddress || "unknown")) {
+    response.setHeader("Retry-After", "60");
+    return sendJson(response, 429, {
+      error: "Too many requests. Use the local reading controls and try later.",
+    });
+  }
+  const payload = await readJson(request);
+  const result = await simplify(payload);
+  return sendJson(response, result.status, result.body);
+}
+
 /** Build an HTTP server with an injected AI implementation for integration tests. */
 function createApp({
   simplify = createSimplifier({
@@ -75,34 +111,13 @@ function createApp({
     securityHeaders(response);
     const route = (request.url || "/").split("?")[0];
     try {
-      if (route === "/api/simplify") {
-        if (request.method !== "POST") {
-          response.setHeader("Allow", "POST");
-          return sendJson(response, 405, { error: "Use POST." });
-        }
-        if (!sameOrigin(request))
-          return sendJson(response, 403, {
-            error: "Same-origin requests only.",
-          });
-        if (
-          !/^application\/json(?:\s*;|$)/i.test(
-            request.headers["content-type"] || "",
-          )
-        )
-          return sendJson(response, 415, { error: "Use application/json." });
-        // Use the socket address, not a caller-controlled forwarded-IP header.
-        // On Cloud Run a shared proxy may make this stricter; global caps also apply.
-        if (!limiter.allow(request.socket.remoteAddress || "unknown")) {
-          response.setHeader("Retry-After", "60");
-          return sendJson(response, 429, {
-            error:
-              "Too many requests. Use the local reading controls and try later.",
-          });
-        }
-        const payload = await readJson(request);
-        const result = await simplify(payload);
-        return sendJson(response, result.status, result.body);
-      }
+      if (route === "/api/simplify")
+        return await handleSimplifyRequest(
+          request,
+          response,
+          simplify,
+          limiter,
+        );
       if (request.method !== "GET" && request.method !== "HEAD")
         return sendJson(response, 405, { error: "Method not allowed." });
       if (route === "/healthz")

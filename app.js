@@ -38,18 +38,11 @@ function debounce(fn, ms) {
 let questions = [],
   wordElements = [],
   questionWords = [],
-  currentQuestionIndex = 0,
-  speaking = false,
-  timer = null;
-let highlightedWord = null,
-  navigationIndices = [],
-  speechSession = 0;
+  currentQuestionIndex = 0;
+let navigationIndices = [];
 let cachedPaperText = null,
   cachedPaper = null;
 const bookmarks = new Set();
-const aiCache = new Map();
-let aiRequestId = 0;
-let aiController = null;
 
 function go(name) {
   resetAiAid();
@@ -143,67 +136,11 @@ function apply() {
 }
 
 /* ---------- render reader (DOM-safe) ---------- */
-function appendToken(span, token) {
-  if (!settings.chunk) {
-    span.appendChild(createElement("span", "w", token));
-    return;
-  }
-  const t = Core.splitToken(token);
-  if (!t || t.core.length < Core.CHUNK_MIN_LEN) {
-    span.appendChild(createElement("span", "w", token));
-    return;
-  }
-  const parts = Core.syllableChunks(t.core);
-  if (parts.length < 2) {
-    span.appendChild(createElement("span", "w", token));
-    return;
-  }
-  const w = createElement("span", "w");
-  w.appendChild(document.createTextNode(t.pre));
-  parts.forEach((p, i) => {
-    if (i) {
-      const separator = createElement("span", "chunk", "·");
-      separator.setAttribute("aria-hidden", "true");
-      w.appendChild(separator);
-    }
-    w.appendChild(document.createTextNode(p));
-  });
-  w.appendChild(document.createTextNode(t.post));
-  span.appendChild(w);
-}
-
-/** Build one question and cache speech token offsets. */
-function appendQuestion(container, q, qi) {
-  const div = createElement("div", "q" + (q.num ? "" : " intro"));
-  div.dataset.q = qi;
-  if (q.num) div.appendChild(createElement("span", "qn", "Q" + q.num));
-  const marks = Core.extractMarks(q.text);
-  if (marks) div.appendChild(createElement("span", "marks", marks + " marks"));
-  const words = Core.stripMarks(q.text).split(/\s+/).filter(Boolean);
-  const startIdx = wordElements.length;
-  const span = createElement("span", "qt");
-  words.forEach((w, i) => {
-    if (i) span.appendChild(document.createTextNode(" "));
-    appendToken(span, w);
-  });
-  div.appendChild(span);
-  container.appendChild(div);
-  const els = [...span.querySelectorAll(".w")];
-  els.forEach((e) => wordElements.push(e));
-  let characterOffset = 0;
-  const offsets = words.map((word) => {
-    const start = characterOffset;
-    characterOffset += word.length + 1;
-    return start;
-  });
-  questionWords.push({
-    start: startIdx,
-    count: els.length,
-    text: words.join(" "),
-    words,
-    offsets,
-  });
-}
+const readerView = ExamReaderView.create({
+  Core,
+  createElement,
+  getSettings: () => settings,
+});
 
 /** Build the paper with DOM nodes only. No pasted text becomes markup. */
 function render() {
@@ -215,9 +152,16 @@ function render() {
   paper.classList.toggle("listmode", !settings.spotlight);
   byId("qcard").classList.toggle("spot", settings.spotlight);
   const fragment = document.createDocumentFragment();
-  questions.forEach((question, index) =>
-    appendQuestion(fragment, question, index),
-  );
+  questions.forEach((question, index) => {
+    const { elements, ...metadata } = readerView.appendQuestion(
+      fragment,
+      question,
+      index,
+      wordElements.length,
+    );
+    elements.forEach((element) => wordElements.push(element));
+    questionWords.push(metadata);
+  });
   paper.appendChild(fragment);
   const numbered = questions
     .map((question, index) => (question.num ? index : -1))
@@ -311,7 +255,7 @@ function updateQuestionHeader() {
       if (document.fullscreenElement) await document.exitFullscreen();
       else if (card.requestFullscreen) await card.requestFullscreen();
       else announce("Fullscreen is not supported in this browser.");
-    } catch (error) {
+    } catch {
       announce(
         "Fullscreen is unavailable. You can still use every reading control.",
       );
@@ -338,107 +282,26 @@ function motionBehavior() {
     ? "auto"
     : "smooth";
 }
-function clearSaid() {
-  if (highlightedWord) highlightedWord.classList.remove("said");
-  highlightedWord = null;
-}
-function highlightWord(index) {
-  clearSaid();
-  highlightedWord = wordElements[index];
-  if (!highlightedWord) return;
-  highlightedWord.classList.add("said");
-  highlightedWord.scrollIntoView({
-    block: "center",
-    behavior: motionBehavior(),
-  });
-}
-/** Read-along remains available when no local speech voice is installed. */
-function startFollowAlong() {
-  byId("voiceNote").textContent =
-    "No local voice available. Follow-along highlight is playing instead.";
-  announce("Follow-along highlight playing.");
-  let index = settings.spotlight
-    ? questionWords[currentQuestionIndex].start
-    : 0;
-  const end = settings.spotlight
-    ? questionWords[currentQuestionIndex].start +
-      questionWords[currentQuestionIndex].count
-    : wordElements.length;
-  clearInterval(timer);
-  timer = setInterval(() => {
-    if (!speaking || index >= end) {
-      stopSpeak();
-      return;
-    }
-    highlightWord(index++);
-  }, Core.CONFIG.highlightIntervalMs);
-}
+const speechController = ExamReaderSpeech.create({
+  Core,
+  byId,
+  announce,
+  getState: () => ({
+    settings,
+    questions,
+    questionWords,
+    wordElements,
+    currentQuestionIndex,
+  }),
+  getNavigation: navList,
+  navigate: showQ,
+  motionBehavior,
+});
 function speak() {
-  if (!questionWords.length) return;
-  if (speaking) {
-    stopSpeak();
-    return;
-  }
-  clearSaid();
-  speaking = true;
-  byId("playBtn").textContent = "⏸";
-  byId("playBtn").setAttribute("aria-label", "Stop reading aloud");
-  const session = ++speechSession;
-  const seq = settings.spotlight
-    ? [currentQuestionIndex]
-    : questions.map((_, i) => i);
-  const hasSynth = "speechSynthesis" in window;
-  const voices = hasSynth
-    ? speechSynthesis.getVoices().filter((voice) => voice.localService)
-    : [];
-  if (!hasSynth || !voices.length) {
-    startFollowAlong();
-    return;
-  }
-  byId("voiceNote").textContent = "";
-  announce("Reading question aloud");
-  let si = 0;
-  const next = () => {
-    if (!speaking || session !== speechSession) return;
-    if (si >= seq.length) {
-      stopSpeak();
-      if (settings.aloud && settings.spotlight) {
-        const nav = navList();
-        const p = nav.indexOf(currentQuestionIndex);
-        if (p < nav.length - 1) showQ(nav[p + 1], true);
-      }
-      return;
-    }
-    const qm = questionWords[seq[si]];
-    const u = new SpeechSynthesisUtterance(qm.text);
-    u.rate = Core.CONFIG.speechRate;
-    u.voice = voices.find((voice) => /^en/i.test(voice.lang)) || voices[0];
-    u.onboundary = (event) => {
-      if (session !== speechSession || !speaking) return;
-      const wordIndex = Core.wordIndexAt(qm.offsets, event.charIndex);
-      if (wordIndex >= 0) highlightWord(qm.start + wordIndex);
-    };
-    u.onend = () => {
-      if (session === speechSession) {
-        si++;
-        next();
-      }
-    };
-    u.onerror = () => {
-      if (session === speechSession && speaking) startFollowAlong();
-    };
-    speechSynthesis.speak(u);
-  };
-  next();
+  speechController.toggle();
 }
 function stopSpeak() {
-  speaking = false;
-  speechSession++;
-  clearInterval(timer);
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
-  byId("playBtn").textContent = "▶";
-  byId("playBtn").setAttribute("aria-label", "Read question aloud");
-  clearSaid();
+  speechController.stop();
 }
 
 /* ---------- paste screen ---------- */
@@ -477,7 +340,7 @@ byId("startBtn").addEventListener("click", () => {
   const paper = getPaperAnalysis(t);
   questions = paper.questions;
   bookmarks.clear();
-  aiCache.clear();
+  aiAid.clearCache();
   const stats = paper.stats;
   if (!questions.length) {
     byId("inputError").textContent = "Add text after the question number.";
@@ -893,111 +756,12 @@ if (settings.profile !== "none") {
 }
 apply();
 
-/* ---------- explicit, optional Gemini reading aid ---------- */
+/* Optional network aid is separate from local reading and rendering. */
+const aiAid = ExamReaderAiAid.create({
+  Core,
+  byId,
+  getState: () => ({ questions, currentQuestionIndex, settings }),
+});
 function resetAiAid() {
-  aiRequestId++;
-  aiController?.abort();
-  aiController = null;
-  byId("aiConsent").checked = false;
-  byId("simplifyBtn").disabled = true;
-  byId("simplifyBtn").textContent = "Simplify with AI";
-  byId("aiStatus").textContent = "";
-  byId("aiResult").classList.add("hidden");
-  byId("aiResultText").textContent = "";
+  aiAid.reset();
 }
-function showAiAid(result) {
-  byId("aiResultTitle").textContent =
-    result.source === "gemini"
-      ? "Gemini AI rewording, check against the original"
-      : "Local reading guide, not an AI rewording";
-  byId("aiResultText").textContent = result.text;
-  byId("aiResult").classList.remove("hidden");
-  const localReasons = {
-    "not-configured": "Gemini is not configured on this server. ",
-    busy: "The demo server is busy. ",
-    timeout: "The AI response timed out. ",
-    "provider-unavailable": "Gemini did not return a complete response. ",
-  };
-
-  byId("aiStatus").textContent =
-    result.source === "gemini"
-      ? "Original question and marks are unchanged. This aid may be inaccurate."
-      : (localReasons[result.reason] || "") +
-        "This is a local reading guide, not an AI rewording. Original question and marks are unchanged.";
-}
-byId("aiConsent").addEventListener("change", () => {
-  byId("simplifyBtn").disabled = !byId("aiConsent").checked;
-});
-/** One explicit click, one question, one same-origin request. Never an automatic upload. */
-byId("simplifyBtn").addEventListener("click", async () => {
-  if (!byId("aiConsent").checked || !questions[currentQuestionIndex]) return;
-  const question = questions[currentQuestionIndex].text;
-  const profile = settings.profile;
-  const key = JSON.stringify([question, profile]);
-  const fallback = { source: "local", text: Core.localReadingAid(question) };
-  const requestId = ++aiRequestId;
-  const controller = new AbortController();
-  aiController = controller;
-  byId("simplifyBtn").disabled = true;
-  byId("aiResult").classList.add("hidden");
-  byId("aiStatus").textContent = "Preparing an optional reading aid...";
-  let timeout;
-  try {
-    if (aiCache.has(key)) {
-      showAiAid(aiCache.get(key));
-      return;
-    }
-    if (
-      !["http:", "https:"].includes(location.protocol) ||
-      !navigator.onLine ||
-      question.length > 6000
-    ) {
-      showAiAid(fallback);
-      return;
-    }
-    timeout = setTimeout(() => controller.abort(), 12000);
-    const response = await fetch("/api/simplify", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, profile }),
-      signal: controller.signal,
-    });
-    const result = await response.json();
-    if (requestId !== aiRequestId) return;
-    if (
-      !["gemini", "local"].includes(result.source) ||
-      typeof result.text !== "string" ||
-      !result.text ||
-      result.text.length > 8000
-    ) {
-      showAiAid(fallback);
-      return;
-    }
-    if (result.source === "gemini") {
-      if (aiCache.size >= 50) aiCache.delete(aiCache.keys().next().value);
-      aiCache.set(key, result);
-    }
-    showAiAid(result);
-  } catch (error) {
-    if (requestId === aiRequestId) showAiAid(fallback);
-  } finally {
-    clearTimeout(timeout);
-    if (requestId === aiRequestId) {
-      byId("simplifyBtn").disabled = !byId("aiConsent").checked;
-      aiController = null;
-    }
-  }
-});
-
-byId("localAidBtn").addEventListener("click", () => {
-  if (!questions[currentQuestionIndex]) return;
-  aiRequestId++;
-  aiController?.abort();
-  aiController = null;
-  byId("simplifyBtn").disabled = !byId("aiConsent").checked;
-  showAiAid({
-    source: "local",
-    text: Core.localReadingAid(questions[currentQuestionIndex].text),
-  });
-});

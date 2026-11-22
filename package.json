@@ -5,8 +5,8 @@
   "description": "Private, explainable reading assistance for exam text",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests.js && node --test server.test.js",
-    "check": "node --check core.js && node --check app.js && node --check ai-service.js && node --check server.js"
+    "test": "node tests.js && node --test server.test.js ui-modules.test.js",
+    "check": "node --check core.js && node --check reader-view.js && node --check ai-aid.js && node --check speech-controller.js && node --check app.js && node --check ai-service.js && node --check server.js"
   },
   "engines": {
     "node": ">=22 <23"

@@ -7,3 +7,6 @@
 !index.html
 !style.css
 !package.json
+!reader-view.js
+!ai-aid.js
+!speech-controller.js

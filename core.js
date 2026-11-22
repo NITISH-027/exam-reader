@@ -43,7 +43,44 @@
   function clampSize(size, delta) {
     return Math.max(0, Math.min(SIZE_STEPS.length - 1, size + delta));
   }
-  /** Restore only known keys whose values belong to the settings schema. */
+  /** Shared numeric rule for persisted size and spacing values. */
+  function isIntegerInRange(value, minimum, maximum) {
+    return Number.isInteger(value) && value >= minimum && value <= maximum;
+  }
+
+  // Each non-boolean field owns its validation rule. Boolean settings share
+  // the default-value type check in isValidSetting.
+  var SETTING_VALIDATORS = {
+    size: function (value) {
+      return isIntegerInRange(value, 0, SIZE_STEPS.length - 1);
+    },
+    spacing: function (value) {
+      return isIntegerInRange(value, 0, 2);
+    },
+    tint: function (value) {
+      return (
+        typeof value === "string" &&
+        Object.prototype.hasOwnProperty.call(TINTS, value)
+      );
+    },
+    contrast: function (value) {
+      return ["none", "dark", "yellow"].includes(value);
+    },
+    profile: function (value) {
+      return (
+        typeof value === "string" &&
+        Object.prototype.hasOwnProperty.call(PROFILES, value)
+      );
+    },
+  };
+
+  function isValidSetting(key, value) {
+    if (typeof DEFAULT_SETTINGS[key] === "boolean")
+      return typeof value === "boolean";
+    return SETTING_VALIDATORS[key](value);
+  }
+
+  /** Restore only own, known keys whose values pass the field schema. */
   function mergeSettings(saved) {
     var result = Object.assign({}, DEFAULT_SETTINGS);
     if (!saved || typeof saved !== "object" || Array.isArray(saved))
@@ -51,39 +88,7 @@
     Object.keys(DEFAULT_SETTINGS).forEach(function (key) {
       if (!Object.prototype.hasOwnProperty.call(saved, key)) return;
       var value = saved[key];
-      if (
-        key === "size" &&
-        Number.isInteger(value) &&
-        value >= 0 &&
-        value < SIZE_STEPS.length
-      )
-        result[key] = value;
-      else if (
-        key === "spacing" &&
-        Number.isInteger(value) &&
-        value >= 0 &&
-        value <= 2
-      )
-        result[key] = value;
-      else if (
-        key === "tint" &&
-        typeof value === "string" &&
-        Object.prototype.hasOwnProperty.call(TINTS, value)
-      )
-        result[key] = value;
-      else if (key === "contrast" && ["none", "dark", "yellow"].includes(value))
-        result[key] = value;
-      else if (
-        key === "profile" &&
-        typeof value === "string" &&
-        Object.prototype.hasOwnProperty.call(PROFILES, value)
-      )
-        result[key] = value;
-      else if (
-        typeof DEFAULT_SETTINGS[key] === "boolean" &&
-        typeof value === "boolean"
-      )
-        result[key] = value;
+      if (isValidSetting(key, value)) result[key] = value;
     });
     return result;
   }
@@ -107,7 +112,7 @@
           var raw = getStorage().getItem(CONFIG.storageKey);
           if (!raw || raw.length > 2048) return mergeSettings(null);
           return mergeSettings(JSON.parse(raw));
-        } catch (error) {
+        } catch {
           return mergeSettings(null);
         }
       },
@@ -117,7 +122,7 @@
             CONFIG.storageKey,
             JSON.stringify(mergeSettings(settings)),
           );
-        } catch (error) {
+        } catch {
           /* Private mode or full storage must not block reading. */
         }
       },
