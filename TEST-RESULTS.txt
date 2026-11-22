@@ -1,0 +1,488 @@
+
+> exam-reader@1.0.0 test
+> node tests.js && node --test server.test.js
+
+
+[1] Question parser
+  PASS  sample paper yields intro + 6 questions
+  PASS  question numbers detected in order
+  PASS  header kept as intro block
+  PASS  multi-line question joined
+  PASS  paren numbering works
+  PASS  "Q3:" numbering works
+  PASS  "Question 4 -" numbering works
+  PASS  empty input gives no questions
+  PASS  marks extracted
+  PASS  marks extracted from parens
+  PASS  no marks gives null
+  PASS  marks stripped from text
+  PASS  question text unchanged apart from numbering
+
+[2] Syllable chunker
+  PASS  photosynthesis
+  PASS  process
+  PASS  sunlight
+  PASS  renewable
+  PASS  hypotenuse
+  PASS  chambers
+  PASS  short word stays whole
+  PASS  empty stays empty
+  PASS  chunks rejoin to the original word
+  PASS  capital letter preserved in first chunk
+  PASS  every chunk has at least 2 chars or is a vowel run
+
+[3] Token splitting (chunk rendering)
+  PASS  plain word
+  PASS  word with comma
+  PASS  bracketed word
+  PASS  digits only are not chunked
+
+[4] Settings
+  PASS  defaults
+  PASS  size clamps at top
+  PASS  size clamps at bottom
+  PASS  size moves
+  PASS  saved values merge
+  PASS  saved flag merges
+  PASS  unknown keys dropped
+  PASS  wrong types rejected
+  PASS  size steps
+  PASS  four overlays plus none
+
+[5] Safety invariants
+  PASS  parser keeps markup as inert text
+  PASS  stripMarks keeps the rest intact
+  PASS  core never touches the DOM
+
+[6] Reading assistant (profiles and paper rules)
+  PASS  sample paper question count
+  PASS  sample paper total marks
+  PASS  long-word ratio detected
+  PASS  sample paper is not dense
+  PASS  dyslexia: chunk on
+  PASS  dyslexia: cream overlay
+  PASS  dyslexia: aloud on
+  PASS  dyslexia: every change has a reason
+  PASS  low vision: largest text
+  PASS  low vision: yellow contrast
+  PASS  focus: ruler on
+  PASS  focus: spotlight on
+  PASS  time pressure: chunk stays off on easy paper
+  PASS  time pressure: read aloud off
+  PASS  paper rule: heavy vocabulary forces chunk on
+  PASS  paper rule: the change is explained
+  PASS  paper rule: dense paper forces spotlight on
+  PASS  tip exists for dense paper
+  PASS  no tip for an easy paper
+  PASS  recommend with no profile keeps defaults except paper rules
+  PASS  profiles list
+
+[7] Settings trust boundary
+  PASS  non-object settings ignored: null
+  PASS  non-object settings ignored: []
+  PASS  non-object settings ignored: 42
+  PASS  non-object settings ignored: "text"
+  PASS  non-object settings ignored: true
+  PASS  invalid size rejected: -1
+  PASS  invalid size rejected: 4
+  PASS  invalid size rejected: 1.5
+  PASS  invalid size rejected: NaN
+  PASS  invalid size rejected: Infinity
+  PASS  invalid size rejected: 2
+  PASS  invalid spacing rejected: -1
+  PASS  invalid spacing rejected: 3
+  PASS  invalid spacing rejected: 0.5
+  PASS  invalid spacing rejected: 1
+  PASS  unknown contrast rejected
+  PASS  inherited tint key rejected
+  PASS  unknown profile rejected
+  PASS  inherited setting ignored
+  PASS  unknown recommendation profile falls back
+
+[8] Safe settings storage
+  PASS  missing storage returns defaults
+  PASS  malformed JSON returns defaults
+  PASS  oversized storage ignored
+  PASS  storage round trip
+  PASS  paper text never saved
+  PASS  storage access refusal is harmless
+  PASS  failed save does not stop reading
+
+[9] Input and parser limits
+  PASS  blank input rejected with explanation
+  PASS  valid sample accepted
+  PASS  character boundary accepted
+  PASS  oversized paper rejected
+  PASS  word limit enforced independently
+  PASS  direct parser cannot bypass bounds
+  PASS  three-digit numbering
+  PASS  CRLF continuation
+  PASS  plain notice retained
+  PASS  Unicode text preserved
+  PASS  no-question input safe
+  PASS  empty stats finite
+
+[10] Word indexing and chunk invariants
+  PASS  word index starts at zero
+  PASS  middle token by offset
+  PASS  final token by offset
+  PASS  empty offsets safe
+  PASS  negative speech offset safe
+  PASS  chunks preserve all characters: toString
+  PASS  chunks preserve all characters: constructor
+  PASS  chunks preserve all characters: Photosynthesis
+  PASS  chunks preserve all characters: alphabetical
+  PASS  chunks preserve all characters: strengths
+  PASS  chunks preserve all characters: banana
+  PASS  chunks preserve all characters: SCIENCE
+  PASS  chunks preserve all characters: x
+  PASS  chunks preserve all characters: Tamil
+  PASS  chunks preserve all characters: aaaaaaaaaaaaaaaaaaaa
+
+[11] Static security contracts
+  PASS  no HTML injection sink assignment
+  PASS  no dynamic code evaluation
+  PASS  no inline event attributes
+  PASS  CSP limits connections to this origin
+  PASS  CSP forbids objects
+  PASS  source field has accessible name
+  PASS  language declared
+  PASS  skip link exists
+
+----------------------------------------
+124 passed, 0 failed
+TAP version 13
+# Subtest: rejects null body
+ok 1 - rejects null body
+  ---
+  duration_ms: 0.830804
+  type: 'test'
+  ...
+# Subtest: rejects array body
+ok 2 - rejects array body
+  ---
+  duration_ms: 0.084453
+  type: 'test'
+  ...
+# Subtest: rejects missing question
+ok 3 - rejects missing question
+  ---
+  duration_ms: 0.102925
+  type: 'test'
+  ...
+# Subtest: rejects empty question
+ok 4 - rejects empty question
+  ---
+  duration_ms: 0.064898
+  type: 'test'
+  ...
+# Subtest: rejects large question
+ok 5 - rejects large question
+  ---
+  duration_ms: 0.074891
+  type: 'test'
+  ...
+# Subtest: rejects bad profile
+ok 6 - rejects bad profile
+  ---
+  duration_ms: 0.058104
+  type: 'test'
+  ...
+# Subtest: rejects array profile
+ok 7 - rejects array profile
+  ---
+  duration_ms: 0.052028
+  type: 'test'
+  ...
+# Subtest: rejects inherited profile key
+ok 8 - rejects inherited profile key
+  ---
+  duration_ms: 0.050594
+  type: 'test'
+  ...
+# Subtest: rejects caller system prompt
+ok 9 - rejects caller system prompt
+  ---
+  duration_ms: 0.243484
+  type: 'test'
+  ...
+# Subtest: valid payload accepted at exact character limit
+ok 10 - valid payload accepted at exact character limit
+  ---
+  duration_ms: 0.335483
+  type: 'test'
+  ...
+# Subtest: local guide retains the question, not an invented answer
+ok 11 - local guide retains the question, not an invented answer
+  ---
+  duration_ms: 0.336075
+  type: 'test'
+  ...
+# Subtest: local guide can handle empty input
+ok 12 - local guide can handle empty input
+  ---
+  duration_ms: 0.097604
+  type: 'test'
+  ...
+# Subtest: provider prompt has fixed instructions and only selected context
+ok 13 - provider prompt has fixed instructions and only selected context
+  ---
+  duration_ms: 0.588994
+  type: 'test'
+  ...
+# Subtest: missing key does not make a provider request
+ok 14 - missing key does not make a provider request
+  ---
+  duration_ms: 0.201491
+  type: 'test'
+  ...
+# Subtest: invalid request never reaches provider
+ok 15 - invalid request never reaches provider
+  ---
+  duration_ms: 0.091083
+  type: 'test'
+  ...
+# Subtest: Gemini success is real service output with server-only authentication
+ok 16 - Gemini success is real service output with server-only authentication
+  ---
+  duration_ms: 13.439027
+  type: 'test'
+  ...
+# Subtest: safe local fallback on provider denial
+ok 17 - safe local fallback on provider denial
+  ---
+  duration_ms: 0.385639
+  type: 'test'
+  ...
+# Subtest: safe local fallback on network error
+ok 18 - safe local fallback on network error
+  ---
+  duration_ms: 0.203381
+  type: 'test'
+  ...
+# Subtest: safe local fallback on bad JSON
+ok 19 - safe local fallback on bad JSON
+  ---
+  duration_ms: 0.405815
+  type: 'test'
+  ...
+# Subtest: safe local fallback on empty content
+ok 20 - safe local fallback on empty content
+  ---
+  duration_ms: 0.335004
+  type: 'test'
+  ...
+# Subtest: safe local fallback on oversized provider response
+ok 21 - safe local fallback on oversized provider response
+  ---
+  duration_ms: 0.312701
+  type: 'test'
+  ...
+# Subtest: safe local fallback on truncated response
+ok 22 - safe local fallback on truncated response
+  ---
+  duration_ms: 0.325327
+  type: 'test'
+  ...
+# Subtest: timeout is bounded even with an unresponsive mock
+ok 23 - timeout is bounded even with an unresponsive mock
+  ---
+  duration_ms: 12.966182
+  type: 'test'
+  ...
+# Subtest: reasoning parts are not returned as the reading aid
+ok 24 - reasoning parts are not returned as the reading aid
+  ---
+  duration_ms: 0.68866
+  type: 'test'
+  ...
+# Subtest: concurrent calls are capped and permits are released
+ok 25 - concurrent calls are capped and permits are released
+  ---
+  duration_ms: 1.277599
+  type: 'test'
+  ...
+# Subtest: per-client quota resets after a minute
+ok 26 - per-client quota resets after a minute
+  ---
+  duration_ms: 0.238142
+  type: 'test'
+  ...
+# Subtest: global hourly quota also applies across clients
+ok 27 - global hourly quota also applies across clients
+  ---
+  duration_ms: 0.384006
+  type: 'test'
+  ...
+# Subtest: HTTP serves app with same-origin CSP and security headers
+ok 28 - HTTP serves app with same-origin CSP and security headers
+  ---
+  duration_ms: 20.495735
+  type: 'test'
+  ...
+# Subtest: static allowlist blocks /server.js
+ok 29 - static allowlist blocks /server.js
+  ---
+  duration_ms: 4.822764
+  type: 'test'
+  ...
+# Subtest: static allowlist blocks /ai-service.js
+ok 30 - static allowlist blocks /ai-service.js
+  ---
+  duration_ms: 6.803291
+  type: 'test'
+  ...
+# Subtest: static allowlist blocks /.env
+ok 31 - static allowlist blocks /.env
+  ---
+  duration_ms: 4.267363
+  type: 'test'
+  ...
+# Subtest: static allowlist blocks /package.json
+ok 32 - static allowlist blocks /package.json
+  ---
+  duration_ms: 2.781672
+  type: 'test'
+  ...
+# Subtest: static allowlist blocks /../server.js
+ok 33 - static allowlist blocks /../server.js
+  ---
+  duration_ms: 2.465433
+  type: 'test'
+  ...
+# Subtest: static allowlist blocks /tests.js
+ok 34 - static allowlist blocks /tests.js
+  ---
+  duration_ms: 3.774707
+  type: 'test'
+  ...
+# Subtest: HTTP endpoint uses injected Gemini implementation
+ok 35 - HTTP endpoint uses injected Gemini implementation
+  ---
+  duration_ms: 5.748732
+  type: 'test'
+  ...
+# Subtest: HTTP blocks cross-origin browser requests
+ok 36 - HTTP blocks cross-origin browser requests
+  ---
+  duration_ms: 4.041861
+  type: 'test'
+  ...
+# Subtest: HTTP requires JSON
+ok 37 - HTTP requires JSON
+  ---
+  duration_ms: 4.317966
+  type: 'test'
+  ...
+# Subtest: HTTP rejects GET on the API
+ok 38 - HTTP rejects GET on the API
+  ---
+  duration_ms: 2.145863
+  type: 'test'
+  ...
+# Subtest: HTTP rejects malformed JSON
+ok 39 - HTTP rejects malformed JSON
+  ---
+  duration_ms: 3.024538
+  type: 'test'
+  ...
+# Subtest: HTTP rejects oversized JSON before provider use
+ok 40 - HTTP rejects oversized JSON before provider use
+  ---
+  duration_ms: 4.071461
+  type: 'test'
+  ...
+# Subtest: HTTP returns rate limit with retry guidance
+ok 41 - HTTP returns rate limit with retry guidance
+  ---
+  duration_ms: 9.509094
+  type: 'test'
+  ...
+# Subtest: local guide preserves decimal values intact
+ok 42 - local guide preserves decimal values intact
+  ---
+  duration_ms: 0.123662
+  type: 'test'
+  ...
+# Subtest: server startup honours PORT and exposes a key-free health check
+ok 43 - server startup honours PORT and exposes a key-free health check
+  ---
+  duration_ms: 33.474986
+  type: 'test'
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 190.849088
+
+> exam-reader@1.0.0 check
+> node --check core.js && node --check app.js && node --check ai-service.js && node --check server.js
+
+PASS landing visible
+PASS paste visible
+PASS skip target follows the screen
+PASS selected chip announced
+PASS selected heading visible
+PASS lilac theme unchanged
+PASS six sample questions
+PASS cream limited to card
+PASS chunk separators rendered
+PASS chunk separators hidden from assistive reading
+PASS voice fallback explained
+PASS one word highlighted
+PASS speech stops cleanly
+PASS right arrow advances
+PASS bookmark state exposed
+PASS popover keyboard focus enters
+PASS Escape returns focus
+PASS spotlight pressed state updated
+PASS keyboard ruler works
+PASS pasted markup is inert text
+PASS pasted words retained
+PASS no pasted script ran
+PASS oversized input blocks reading
+PASS input limit explained
+PASS input not silently truncated
+PASS empty numbered paper handled
+PASS clear hides reading button
+PASS invalid saved settings rejected
+PASS profile can be selected: lowvision
+PASS profile can be selected: focus
+PASS profile can be selected: esl
+PASS profile can be selected: time
+PASS mobile has no page overflow
+PASS mobile reader has no page overflow
+PASS mobile settings control reachable
+PASS reduced-motion CSS active
+PASS no external network requests
+PASS no JavaScript errors
+
+38 browser checks passed, 0 failed
+PASS AI is opt-in, disabled initially
+PASS consent unchecked initially
+PASS local guide requires no consent or upload
+PASS privacy explanation names Google
+PASS consent alone sends nothing
+PASS explicit click sends one request
+PASS only question and profile fields sent
+PASS only selected question sent
+PASS original words unchanged
+PASS original marks unchanged
+PASS AI result clearly labelled
+PASS AI markup remains inert text
+PASS repeated click uses memory cache
+PASS new question resets consent
+PASS old result hidden on new question
+PASS network failure has deterministic fallback
+PASS offline UI still produces local guide
+PASS actual server without key falls back safely
+PASS browser never contacts Google directly
+PASS no JavaScript errors
+PASS downloaded file has local fallback
+
+21 AI browser checks passed, 0 failed

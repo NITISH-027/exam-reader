@@ -1,0 +1,9 @@
+*
+!Dockerfile
+!server.js
+!ai-service.js
+!core.js
+!app.js
+!index.html
+!style.css
+!package.json

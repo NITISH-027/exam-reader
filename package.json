@@ -1,0 +1,14 @@
+{
+  "name": "exam-reader",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Private, explainable reading assistance for exam text",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests.js && node --test server.test.js",
+    "check": "node --check core.js && node --check app.js && node --check ai-service.js && node --check server.js"
+  },
+  "engines": {
+    "node": ">=22 <23"
+  }
+}

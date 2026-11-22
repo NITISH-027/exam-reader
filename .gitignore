@@ -1,0 +1,19 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+
+# Logs and temp files
+*.log
+*.tmp
+node_modules/
+
+# Credentials never belong in a repository
+.env
+.env.*
+*-credentials.json
+__pycache__/

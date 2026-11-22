@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      name="description"
+      content="Exam Reader - an offline reading aid that adapts exam papers for dyslexic and low-vision students without changing a single word."
+    />
+    <title>Exam Reader - Same question, readable by everyone</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-contrast="none">
+    <a class="skip-link" href="#main-landing" id="skipLink"
+      >Skip to main content</a
+    >
+    <div class="sr-only" id="live" aria-live="polite" role="status"></div>
+
+    <!-- ================= LANDING ================= -->
+    <div class="view" id="view-landing">
+      <header class="nav">
+        <div class="brand">
+          <span class="logo-mark" aria-hidden="true">✦</span><b>Exam Reader</b>
+        </div>
+        <nav class="nav-links" aria-label="Main">
+          <a href="#features">Features</a><a href="#how">How It Works</a
+          ><a href="#about">About</a><a href="#faq">FAQ</a>
+        </nav>
+        <button class="btn-dark" data-go="paste">
+          Get Started <span aria-hidden="true">→</span>
+        </button>
+      </header>
+
+      <main tabindex="-1" id="main-landing">
+        <section class="hero">
+          <div class="hero-left" data-main>
+            <h1>Same question,<br /><em>readable by</em><br />everyone.</h1>
+            <p class="hero-sub">
+              No student should lose marks because of how they see or read,
+              instead of what they know.
+            </p>
+            <button class="btn-dark big" data-go="paste">
+              Try it now <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="blob b1"></div>
+            <div class="blob b2"></div>
+            <div class="mini-card before">
+              <span class="mini-tag">Before</span>
+              <p>
+                Consider the following paragraph carefully and answer the
+                questions that follow. The development of technology has
+                significantly impacted various sectors, leading to both
+                opportunities and challenges.
+              </p>
+            </div>
+            <div class="arrow-dot">→</div>
+            <div class="mini-card after">
+              <span class="mini-tag on">After <i class="spk">🔊</i></span>
+              <p class="lg">Technology has changed many sectors.</p>
+              <p class="lg hl">It brings opportunities and challenges.</p>
+              <p class="lg"><b>Analyse its impact.</b></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="strip" aria-label="Highlights">
+          <div class="strip-item">
+            <span class="ico" aria-hidden="true">👁</span>
+            <div>
+              <b>Multiple Reading Modes</b
+              ><small>One line, focus ruler &amp; more</small>
+            </div>
+          </div>
+          <div class="strip-item">
+            <span class="ico" aria-hidden="true">🔊</span>
+            <div><b>Read Aloud</b><small>With word highlighting</small></div>
+          </div>
+          <div class="strip-item">
+            <span class="ico" aria-hidden="true">Aa</span>
+            <div><b>Adjust Text</b><small>Bigger. Clearer.</small></div>
+          </div>
+          <div class="strip-item">
+            <span class="ico" aria-hidden="true">◐</span>
+            <div><b>Colour Overlays</b><small>For better focus</small></div>
+          </div>
+        </section>
+
+        <section class="page-sec" id="features">
+          <h2>Built for the exam hall</h2>
+          <div class="cards">
+            <div class="fcard">
+              <h3>Question Spotlight</h3>
+              <p>
+                Everything dims except the question you are on. Move one
+                question at a time, never lose your place.
+              </p>
+            </div>
+            <div class="fcard">
+              <h3>Focus ruler</h3>
+              <p>
+                A soft band follows your cursor so your eyes stay on a single
+                line.
+              </p>
+            </div>
+            <div class="fcard">
+              <h3>Chunk words</h3>
+              <p>
+                Long words split into sound chunks, pho-to-syn-the-sis, so
+                decoding never stalls.
+              </p>
+            </div>
+            <div class="fcard">
+              <h3>Read aloud</h3>
+              <p>
+                The built-in browser voice reads each question while every word
+                lights up as it is spoken.
+              </p>
+            </div>
+            <div class="fcard">
+              <h3>Overlays and contrast</h3>
+              <p>
+                Cream, mint, blue and rose tints, plus dark and yellow-on-black
+                contrast modes.
+              </p>
+            </div>
+            <div class="fcard">
+              <h3>Marks and numbering kept</h3>
+              <p>
+                Question numbers and mark allocations are detected and shown as
+                badges. The text itself never changes.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-sec" id="how">
+          <h2>How it works</h2>
+          <div class="cards three">
+            <div class="fcard">
+              <h3>1 · Paste</h3>
+              <p>
+                Paste any question paper or notice. Numbered questions are found
+                automatically.
+              </p>
+            </div>
+            <div class="fcard">
+              <h3>2 · Adapt</h3>
+              <p>
+                Pick the size, spacing, tint and mode that suit your eyes.
+                Everything is remembered.
+              </p>
+            </div>
+            <div class="fcard">
+              <h3>3 · Read</h3>
+              <p>
+                Move question by question with the spotlight, or listen with
+                follow-along highlighting.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-sec" id="about">
+          <h2>About</h2>
+          <p class="plain">
+            Exam Reader adapts the presentation of exam text for readers with
+            different needs. Its reading controls run locally without an
+            account. Optional Gemini simplification sends only the chosen
+            question and reading profile to Google after explicit consent and a
+            click; the original question and marks stay unchanged.
+          </p>
+        </section>
+
+        <section class="page-sec" id="faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>Does it need internet?</summary>
+            <p>
+              The reading controls work without internet once this page is open.
+              Download the project to reopen it offline. Optional Gemini
+              rewording needs a connection and the configured server. A local
+              guide remains available without them.
+            </p>
+          </details>
+          <details>
+            <summary>Does read-aloud work on every laptop?</summary>
+            <p>
+              It uses locally installed browser voices only. If none are
+              available, Exam Reader switches to a timed follow-along highlight.
+              It never uses an online voice service.
+            </p>
+          </details>
+          <details>
+            <summary>Does it change the question paper?</summary>
+            <p>
+              Never. It only changes presentation: size, spacing, colour,
+              chunking and focus. Question numbers and marks are preserved.
+            </p>
+          </details>
+          <details>
+            <summary>Where is my text stored?</summary>
+            <p>
+              Nowhere. Text is processed in memory only. Only your display
+              settings are saved on your own device.
+            </p>
+          </details>
+        </section>
+      </main>
+
+      <footer class="foot">
+        Built by <b>Nitish Prabagaran</b> · Exam Reader · PromptWars x Techverse
+        · Accessibility &amp; Inclusion
+      </footer>
+    </div>
+
+    <!-- ================= PASTE ================= -->
+    <div class="view hidden" id="view-paste">
+      <header class="nav">
+        <div class="brand">
+          <span class="logo-mark" aria-hidden="true">✦</span><b>Exam Reader</b>
+        </div>
+        <nav class="nav-links" aria-label="Main">
+          <a href="#main-landing" data-go="landing">Home</a
+          ><a class="sel" aria-current="page">Reader</a>
+        </nav>
+      </header>
+
+      <main tabindex="-1" id="main-paste">
+        <section class="paste-head" data-main>
+          <span class="eyebrow">READ · ADAPT · UNDERSTAND</span>
+          <h1>Paste your <em>question paper.</em></h1>
+          <p>
+            Add the exam text and make it easier to read, without changing a
+            single word.
+          </p>
+        </section>
+
+        <section class="paste-card">
+          <div class="drop-hint" id="dropHint" aria-hidden="true">
+            <span class="doc-ico">≡</span>
+            <b>Paste your question paper here</b>
+            <small>or load a sample to try it out.</small>
+          </div>
+          <label class="sr-only" for="src">Question paper text</label>
+          <p id="inputError" class="input-error" role="alert"></p>
+          <textarea
+            aria-describedby="inputError"
+            id="src"
+            spellcheck="false"
+            placeholder="Paste your question paper here"
+          ></textarea>
+          <div class="paste-actions">
+            <button class="btn-dark" id="sampleBtn">Load sample paper</button>
+            <button class="btn-line" id="clearBtn">⟳ Clear</button>
+            <span class="chars" id="charCount">0 characters</span>
+          </div>
+          <button class="btn-dark go-reader hidden" id="startBtn">
+            Start reading →
+          </button>
+        </section>
+
+        <section class="assistant-bar" aria-label="Reading assistant">
+          <div class="set-group">
+            <label>Who is reading?</label>
+            <div
+              class="profile-chips"
+              id="profileChips"
+              role="group"
+              aria-label="Reading profile"
+            ></div>
+          </div>
+          <div class="why-note hidden" id="whyNote" aria-live="polite">
+            <b class="sel-line" id="whyHead">Why these settings</b>
+            <ul id="whyList"></ul>
+          </div>
+        </section>
+
+        <section class="settings-bar" aria-label="Reading settings">
+          <div class="set-group">
+            <label>Aa&nbsp; Text size</label>
+            <div class="stepper">
+              <button data-size="-1" aria-label="Decrease text size">−</button
+              ><span id="sizeLabel" aria-live="off">100%</span
+              ><button data-size="1" aria-label="Increase text size">+</button>
+            </div>
+          </div>
+          <div class="set-group">
+            <label>☰&nbsp; Spacing</label>
+            <div class="seg" id="spacingSeg" role="group" aria-label="Spacing">
+              <button
+                data-sp="0"
+                class="on"
+                title="Normal spacing"
+                aria-label="Normal spacing"
+              >
+                ≡</button
+              ><button
+                data-sp="1"
+                title="Relaxed spacing"
+                aria-label="Relaxed spacing"
+              >
+                ≣</button
+              ><button
+                data-sp="2"
+                title="Wide spacing"
+                aria-label="Wide spacing"
+              >
+                ☰
+              </button>
+            </div>
+          </div>
+          <div class="set-group">
+            <label>◐&nbsp; Colour overlay</label>
+            <div
+              class="swatches"
+              id="tints"
+              role="group"
+              aria-label="Colour overlay"
+            ></div>
+          </div>
+          <div class="set-group">
+            <label>◑&nbsp; Contrast</label>
+            <div
+              class="seg"
+              id="contrastSeg"
+              role="group"
+              aria-label="Contrast"
+            >
+              <button data-c="none" class="on" aria-label="Normal contrast">
+                A</button
+              ><button data-c="dark" aria-label="Dark mode">A</button
+              ><button data-c="yellow" aria-label="Yellow on black">A</button>
+            </div>
+          </div>
+          <div class="set-group">
+            <label>🔊&nbsp; Voice (Read-aloud)</label>
+            <div class="voice-row">
+              <button
+                class="play-mini"
+                id="voiceTest"
+                aria-label="Test read-aloud voice"
+              >
+                ▶</button
+              ><span class="wave" aria-hidden="true">∿∿∿</span>
+            </div>
+            <div class="voice-note" id="voiceNote2"></div>
+          </div>
+        </section>
+      </main>
+      <footer class="foot">
+        Built by <b>Nitish Prabagaran</b> · Exam Reader
+      </footer>
+    </div>
+
+    <!-- ================= READER ================= -->
+    <div class="view hidden" id="view-reader" data-contrast="none">
+      <header class="nav">
+        <div class="brand">
+          <span class="logo-mark" aria-hidden="true">✦</span><b>Exam Reader</b>
+        </div>
+        <nav class="nav-links" aria-label="Main">
+          <a href="#main-landing" data-go="landing">Home</a
+          ><a class="sel" aria-current="page">Reader</a
+          ><a href="#main-paste" data-go="paste">Paste</a>
+        </nav>
+      </header>
+
+      <main tabindex="-1" id="main-reader">
+        <div class="progress-row">
+          <span id="qPos">Question 1 of 1</span>
+          <div
+            class="progress"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            aria-label="Reading progress"
+          >
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span id="qPct">0% complete</span>
+        </div>
+
+        <div class="reader-body" data-main>
+          <aside class="rail" id="rail" aria-label="Reading tools">
+            <button
+              class="rail-btn on"
+              data-rail="spotlight"
+              aria-pressed="true"
+            >
+              <span aria-hidden="true">✛</span><small>Question Spotlight</small>
+            </button>
+            <button
+              class="rail-btn"
+              data-rail="size"
+              aria-haspopup="dialog"
+              aria-controls="pop"
+              aria-expanded="false"
+            >
+              <span aria-hidden="true">Aa</span><small>Text Size</small>
+            </button>
+            <button
+              class="rail-btn"
+              data-rail="spacing"
+              aria-haspopup="dialog"
+              aria-controls="pop"
+              aria-expanded="false"
+            >
+              <span aria-hidden="true">☰</span><small>Spacing</small>
+            </button>
+            <button
+              class="rail-btn"
+              data-rail="tint"
+              aria-haspopup="dialog"
+              aria-controls="pop"
+              aria-expanded="false"
+            >
+              <span aria-hidden="true">◐</span><small>Colour Overlay</small>
+            </button>
+            <button
+              class="rail-btn"
+              data-rail="contrast"
+              aria-haspopup="dialog"
+              aria-controls="pop"
+              aria-expanded="false"
+            >
+              <span aria-hidden="true">◑</span><small>Contrast</small>
+            </button>
+            <button class="rail-btn" data-rail="voice">
+              <span aria-hidden="true">🔊</span><small>Voice</small>
+            </button>
+            <button
+              class="rail-btn"
+              data-rail="settings"
+              aria-haspopup="dialog"
+              aria-controls="pop"
+              aria-expanded="false"
+            >
+              <span aria-hidden="true">⚙</span><small>Settings</small>
+            </button>
+          </aside>
+          <div
+            class="pop hidden"
+            id="pop"
+            role="dialog"
+            aria-label="Tool options"
+          ></div>
+
+          <section class="qcard-wrap">
+            <div class="qcard" id="qcard">
+              <div class="qcard-top" id="qcardTop"></div>
+              <div class="qbody serif" id="paper"></div>
+              <div
+                class="ruler-band hidden"
+                id="rulerBand"
+                aria-hidden="true"
+              ></div>
+            </div>
+            <details class="ai-assist">
+              <summary>
+                Simplify with AI <small>Optional Gemini reading aid</small>
+              </summary>
+              <p class="ai-privacy">
+                Only when you allow it and click, this question and the selected
+                reading profile are sent to Google Gemini. The original and
+                marks stay unchanged. AI wording can be wrong; always check the
+                original. Free-tier data may be used by Google to improve
+                products. Use sample or public text and a demo profile only,
+                never private papers or personal data.
+              </p>
+              <label class="ai-consent"
+                ><input id="aiConsent" type="checkbox" /> I allow this question
+                and profile to be sent to Google.</label
+              >
+              <button id="localAidBtn" class="btn-line">
+                Local guide (no upload)
+              </button>
+              <button id="simplifyBtn" class="btn-dark" disabled>
+                Simplify with AI
+              </button>
+              <p
+                id="aiStatus"
+                class="ai-status"
+                role="status"
+                aria-live="polite"
+              ></p>
+              <div id="aiResult" class="ai-result hidden" tabindex="-1">
+                <h3 id="aiResultTitle"></h3>
+                <p id="aiResultText"></p>
+              </div>
+            </details>
+            <div class="player-row">
+              <button
+                class="skip"
+                id="prevQ2"
+                title="Previous question"
+                aria-label="Previous question"
+              >
+                ⏮
+              </button>
+              <button
+                class="play-big"
+                id="playBtn"
+                title="Read aloud"
+                aria-label="Read question aloud"
+              >
+                ▶
+              </button>
+              <button
+                class="skip"
+                id="nextQ2"
+                title="Next question"
+                aria-label="Next question"
+              >
+                ⏭
+              </button>
+              <div class="aloud-toggle">
+                <span>🔊 Read aloud</span>
+                <button
+                  class="switch"
+                  id="aloudSwitch"
+                  role="switch"
+                  aria-checked="false"
+                  aria-label="Read aloud continuously"
+                >
+                  <i></i>
+                </button>
+              </div>
+            </div>
+            <div class="voice-note" id="voiceNote"></div>
+            <div class="prevnext">
+              <button class="btn-line" id="prevQ">← Previous</button>
+              <button class="btn-dark" id="nextQ">Next →</button>
+            </div>
+          </section>
+        </div>
+      </main>
+      <footer class="foot">
+        Built by <b>Nitish Prabagaran</b> · Exam Reader
+      </footer>
+    </div>
+
+    <script src="core.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
